@@ -1,4 +1,4 @@
-The code implementation of our paper "Spectral Dynamic Attention Network for Hyperspectral Image Super-Resolution", submitted to IEEE GRSL.(the code will be organized and released as sonon as possible)
+The code implementation of our paper "Spectral Dynamic Attention Network for Hyperspectral Image Super-Resolution", submitted to IEEE GRSL.
 
 ## Requirements
 * basicsr 1.3.4
