@@ -1,0 +1,114 @@
+# GENERATE TIME: Thu Apr  9 09:48:53 2026
+# CMD:
+# ./basicsr/train.py -opt ./options/train/HSI/SDAnetChux4.yml
+
+#conda activate basicsr
+
+name: SDANet
+model_type: SDAModel
+scale: 4
+num_gpu: 1
+manual_seed: 10
+
+datasets:
+  train:
+    name: Chikusei
+    type: PairedMatDataset8xAug
+    dataroot_gt: ../datasets/Chikusei_x4/trains
+    io_backend:
+      type: disk
+    gt_size: 128
+    use_hflip: true
+    use_rot: true
+    use_shuffle: true
+    num_worker_per_gpu: 8
+    batch_size_per_gpu: 16
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+  val:
+    name: Chikusei_val
+    type: PairedMatDataset8xAug 
+    dataroot_gt:  ../datasets/Chikusei_x4/evals
+    io_backend:
+      type: disk
+
+    name: Chikusei_val
+    type: TestMatDatasetCHU
+    dataroot_gt: ../datasets/Chikusei_x4/Chikusei_test.mat
+    io_backend:
+      type: disk
+
+network_g:
+  type: SDANET
+  n_feats: 128
+  n_block: [2, 2, 2, 2]
+  n_group: 4
+  num_heads: 4
+  scale: 4
+  n_colors: 128
+  n_lms_colors: 128
+  drop_path_rate: 0.4
+  expansion_ratio: 1.0
+  ste_mask_tau: 0.15
+
+path:
+  pretrain_network_g: ~
+  strict_load_g: false
+  resume_state: ~
+
+train:
+  ema_decay: 0.999
+  optim_g:
+    type: Adam
+    lr: !!float 4e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+  scheduler:
+    type: CosineAnnealingRestartLR
+    periods: [50000]
+    restart_weights: [1]
+    eta_min: !!float 1e-7
+  total_iter: 33000
+  warmup_iter: -1
+  pixel_opt:
+    type: L1Loss
+    loss_weight: 1.0
+    reduction: mean
+  sam_opt:
+    type: SAMLoss
+    loss_weight: 0.3
+
+val:
+  val_freq: !!float 3000
+  save_img: false
+  pbar: false
+  metrics:
+    ssim:
+      type: calculate_ssim_float
+      crop_border: 0
+      data_range: 1
+    mpsnr:
+      type: calculate_mpsnr_hsi
+      crop_border: 0
+      data_range: 1
+    sam:
+      type: calculate_sam_hsi
+      crop_border: 0
+    ergas:
+      type: calculate_ergas_hsi
+      crop_border: 0
+    CC:
+      type: calculate_corr_hsi
+      crop_border: 0
+
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 9999999
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
+
+dist_params:
+  backend: nccl
+  port: 29706

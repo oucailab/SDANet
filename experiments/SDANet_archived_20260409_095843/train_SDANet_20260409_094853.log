@@ -1,0 +1,293 @@
+2026-04-09 09:48:53,502 INFO: 
+                ____                _       _____  ____
+               / __ ) ____ _ _____ (_)_____/ ___/ / __ \
+              / __  |/ __ `// ___// // ___/\__ \ / /_/ /
+             / /_/ // /_/ /(__  )/ // /__ ___/ // _, _/
+            /_____/ \__,_//____//_/ \___//____//_/ |_|
+     ______                   __   __                 __      __
+    / ____/____   ____   ____/ /  / /   __  __ _____ / /__   / /
+   / / __ / __ \ / __ \ / __  /  / /   / / / // ___// //_/  / /
+  / /_/ // /_/ // /_/ // /_/ /  / /___/ /_/ // /__ / /<    /_/
+  \____/ \____/ \____/ \____/  /_____/\____/ \___//_/|_|  (_)
+    
+Version Information: 
+	BasicSR: 1.3.4.8
+	PyTorch: 2.0.1+cu118
+	TorchVision: 0.15.2+cu118
+2026-04-09 09:48:53,502 INFO: 
+  name: SDANet
+  model_type: SDAModel
+  scale: 4
+  num_gpu: 1
+  manual_seed: 10
+  datasets:[
+    train:[
+      name: Chikusei
+      type: PairedMatDataset8xAug
+      dataroot_gt: ../datasets/Chikusei_x4/trains
+      io_backend:[
+        type: disk
+      ]
+      gt_size: 128
+      use_hflip: True
+      use_rot: True
+      use_shuffle: True
+      num_worker_per_gpu: 8
+      batch_size_per_gpu: 16
+      dataset_enlarge_ratio: 1
+      prefetch_mode: None
+      phase: train
+      scale: 4
+    ]
+    val:[
+      name: Chikusei_val
+      type: TestMatDatasetCHU
+      dataroot_gt: ../datasets/Chikusei_x4/Chikusei_test.mat
+      io_backend:[
+        type: disk
+      ]
+      phase: val
+      scale: 4
+    ]
+  ]
+  network_g:[
+    type: SDANET
+    n_feats: 128
+    n_block: [2, 2, 2, 2]
+    n_group: 4
+    num_heads: 4
+    scale: 4
+    n_colors: 128
+    n_lms_colors: 128
+    drop_path_rate: 0.4
+    expansion_ratio: 1.0
+    ste_mask_tau: 0.15
+  ]
+  path:[
+    pretrain_network_g: None
+    strict_load_g: False
+    resume_state: None
+    experiments_root: /data1/zhangtengya/BasicSR_SDAnet_Open/experiments/SDANet
+    models: /data1/zhangtengya/BasicSR_SDAnet_Open/experiments/SDANet/models
+    training_states: /data1/zhangtengya/BasicSR_SDAnet_Open/experiments/SDANet/training_states
+    log: /data1/zhangtengya/BasicSR_SDAnet_Open/experiments/SDANet
+    visualization: /data1/zhangtengya/BasicSR_SDAnet_Open/experiments/SDANet/visualization
+  ]
+  train:[
+    ema_decay: 0.999
+    optim_g:[
+      type: Adam
+      lr: 0.0004
+      weight_decay: 0
+      betas: [0.9, 0.99]
+    ]
+    scheduler:[
+      type: CosineAnnealingRestartLR
+      periods: [50000]
+      restart_weights: [1]
+      eta_min: 1e-07
+    ]
+    total_iter: 33000
+    warmup_iter: -1
+    pixel_opt:[
+      type: L1Loss
+      loss_weight: 1.0
+      reduction: mean
+    ]
+    sam_opt:[
+      type: SAMLoss
+      loss_weight: 0.3
+    ]
+  ]
+  val:[
+    val_freq: 3000.0
+    save_img: False
+    pbar: False
+    metrics:[
+      ssim:[
+        type: calculate_ssim_float
+        crop_border: 0
+        data_range: 1
+      ]
+      mpsnr:[
+        type: calculate_mpsnr_hsi
+        crop_border: 0
+        data_range: 1
+      ]
+      sam:[
+        type: calculate_sam_hsi
+        crop_border: 0
+      ]
+      ergas:[
+        type: calculate_ergas_hsi
+        crop_border: 0
+      ]
+      CC:[
+        type: calculate_corr_hsi
+        crop_border: 0
+      ]
+    ]
+  ]
+  logger:[
+    print_freq: 100
+    save_checkpoint_freq: 9999999.0
+    use_tb_logger: True
+    wandb:[
+      project: None
+      resume_id: None
+    ]
+  ]
+  dist_params:[
+    backend: nccl
+    port: 29706
+  ]
+  dist: False
+  rank: 0
+  world_size: 1
+  auto_resume: False
+  is_train: True
+  root_path: /data1/zhangtengya/BasicSR_SDAnet_Open
+
+2026-04-09 09:48:57,326 INFO: Dataset [PairedMatDataset8xAug] - Chikusei is built.
+2026-04-09 09:48:57,327 INFO: Training statistics:
+	Number of train images: 6024
+	Dataset enlarge ratio: 1
+	Batch size per gpu: 16
+	World size (gpu number): 1
+	Require iter number per epoch: 377
+	Total epochs: 88; iters: 33000.
+2026-04-09 09:49:09,597 INFO: Dataset [TestMatDatasetCHU] - Chikusei_val is built.
+2026-04-09 09:49:09,598 INFO: Number of val images/folders in Chikusei_val: 4
+2026-04-09 09:49:09,928 INFO: Network [SDANET] is created.
+2026-04-09 09:49:10,753 INFO: Network: SDANET, with parameters: 3,086,272
+2026-04-09 09:49:10,753 INFO: SDANET(
+  (head): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (body): ModuleList(
+    (0-3): 4 x SDAStage(
+      (body): ModuleList(
+        (0): SDABlock(
+          (norm1): LayerNorm()
+          (fused_attn): DSCA(
+            (k_dconv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (k_mlp): Sequential(
+              (0): Conv2d(128, 16, kernel_size=(1, 1), stride=(1, 1))
+              (1): GELU(approximate='none')
+              (2): Conv2d(16, 128, kernel_size=(1, 1), stride=(1, 1))
+              (3): Sigmoid()
+            )
+            (q_proj): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (k_proj): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (v_proj): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (q_dw): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (k_dw): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (v_dw): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (project_out): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (local_dw): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+            (local_pw): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+            (local_act): GELU(approximate='none')
+            (se_reduce): Conv2d(128, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (se_expand): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (fusion): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (drop_path1): Identity()
+          (norm2): LayerNorm()
+          (ffn_prestep): Sequential(
+            (0): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+            (1): GELU(approximate='none')
+            (2): Dropout(p=0.2, inplace=False)
+            (3): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+            (4): GELU(approximate='none')
+            (5): Dropout(p=0.2, inplace=False)
+            (6): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (ffn_fe): FEFeedForward(
+            (expand): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (f5_real): Conv2d(64, 64, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=64, bias=False)
+            (f5_imag): Conv2d(64, 64, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=64, bias=False)
+            (f3_real): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=64, bias=False)
+            (f3_imag): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=64, bias=False)
+            (spatial5): Conv2d(64, 64, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=64, bias=False)
+            (spatial3): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=64, bias=False)
+            (act): GELU(approximate='none')
+            (drop1): Dropout(p=0.2, inplace=False)
+            (drop2): Dropout(p=0.2, inplace=False)
+            (project): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+          (drop_path2): Identity()
+        )
+        (1): SDABlock(
+          (norm1): LayerNorm()
+          (fused_attn): DSCA(
+            (k_dconv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (k_mlp): Sequential(
+              (0): Conv2d(128, 16, kernel_size=(1, 1), stride=(1, 1))
+              (1): GELU(approximate='none')
+              (2): Conv2d(16, 128, kernel_size=(1, 1), stride=(1, 1))
+              (3): Sigmoid()
+            )
+            (q_proj): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (k_proj): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (v_proj): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (q_dw): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (k_dw): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (v_dw): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (project_out): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (local_dw): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+            (local_pw): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+            (local_act): GELU(approximate='none')
+            (se_reduce): Conv2d(128, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (se_expand): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (fusion): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (drop_path1): DropPath()
+          (norm2): LayerNorm()
+          (ffn_prestep): Sequential(
+            (0): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+            (1): GELU(approximate='none')
+            (2): Dropout(p=0.2, inplace=False)
+            (3): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+            (4): GELU(approximate='none')
+            (5): Dropout(p=0.2, inplace=False)
+            (6): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (ffn_fe): FEFeedForward(
+            (expand): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (f5_real): Conv2d(64, 64, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=64, bias=False)
+            (f5_imag): Conv2d(64, 64, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=64, bias=False)
+            (f3_real): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=64, bias=False)
+            (f3_imag): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=64, bias=False)
+            (spatial5): Conv2d(64, 64, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=64, bias=False)
+            (spatial3): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=64, bias=False)
+            (act): GELU(approximate='none')
+            (drop1): Dropout(p=0.2, inplace=False)
+            (drop2): Dropout(p=0.2, inplace=False)
+            (project): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+          (drop_path2): DropPath()
+        )
+      )
+      (body_tail): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+    )
+  )
+  (body_tail): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (upsampler): HSI_Upsampler(
+    (path1_ps): Sequential(
+      (0): Conv2d(128, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): GELU(approximate='none')
+    )
+    (path2_interp): Sequential(
+      (0): Upsample(scale_factor=2.0, mode='bicubic')
+      (1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    )
+    (fusion): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+  )
+  (lms_proc): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (final_conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+)
+2026-04-09 09:49:10,756 INFO: Use Exponential Moving Average with decay: 0.999
+2026-04-09 09:49:10,807 INFO: Network [SDANET] is created.
+2026-04-09 09:49:10,942 INFO: Loss [L1Loss] is created.
+2026-04-09 09:49:10,942 INFO: Loss [SAMLoss] is created.
+2026-04-09 09:49:10,945 INFO: Model [SDAModel] is created.
+2026-04-09 09:49:11,178 INFO: Start training from epoch: 0, iter: 0
