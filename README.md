@@ -57,3 +57,26 @@ Equivalent direct command:
 CUDA_VISIBLE_DEVICES=0 python ./basicsr/test.py -opt ./options/test/HSI/test_SDAnetChux4.yml
 ```
 
+## 📚 Citation
+
+If you find this repository useful, please cite:
+
+```bibtex
+@ARTICLE{zty26grsl,
+  author={Zhang, Tengya and Gao, Feng and Qi, Lin and Dong, Junyu and Du, Qian},
+  journal={IEEE Geoscience and Remote Sensing Letters}, 
+  title={Spectral Dynamic Attention Network for Hyperspectral Image Super-Resolution}, 
+  year={2026},
+  volume={23},
+  pages={1-5}}
+```
+
+## 📬 Contact
+
+If you have any questions, feel free to contact us via email:
+
+- 📧 Feng Gao: gaofeng@ouc.edu.cn
+
+We hope **SDANet** helps your research ⭐ If you find our work useful, please consider citing the paper and starring this repository.
+
+
