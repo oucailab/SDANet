@@ -42,5 +42,4 @@ Equivalent direct command:
 ```
 CUDA_VISIBLE_DEVICES=0 python ./basicsr/test.py -opt ./options/test/HSI/test_SDAnetChux4.yml
 ```
-## References
-* [SSPSR](https://github.com/junjun-jiang/SSPSR)
+
