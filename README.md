@@ -1,4 +1,9 @@
-The code implementation of our paper "Spectral Dynamic Attention Network for Hyperspectral Image Super-Resolution", IEEE GRSL 2026.
+# 🚀 Spectral Dynamic Attention Network for Hyperspectral Image Super-Resolution, IEEE GRSL 2026.
+
+## 📌 **Introduction**
+
+This repository contains the official implementation of our paper:  
+📄 *Spectral Dynamic Attention Network for Hyperspectral Image Super-Resolution* *(IEEE GRSL 2026)*  
 
 ## Requirements
 * basicsr 1.3.4
