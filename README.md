@@ -2,10 +2,10 @@
 
 <p align="center">
   <a href="https://ieeexplore.ieee.org/document/11505914">
-    <img src="https://img.shields.io/badge/Paper-IEEE%20GRSL%202026-1f6feb?style=for-the-badge" alt="Paper Button" />
+    <img src="https://img.shields.io/badge/Paper-IEEE%20GRSL%20-1f6feb?style=for-the-badge" alt="Paper Button" />
   </a>
   <a href="https://arxiv.org/abs/2604.27326">
-    <img src="https://img.shields.io/badge/Paper-ARXIV?style=for-the-badge" alt="Paper Button" />
+    <img src="https://img.shields.io/badge/Paper-ARXIV-brightgreen?style=for-the-badge" alt="Paper Button" />
   </a>
 </p>
 
