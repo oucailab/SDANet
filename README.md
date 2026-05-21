@@ -5,13 +5,13 @@
 This repository contains the official implementation of our paper:  
 📄 *Spectral Dynamic Attention Network for Hyperspectral Image Super-Resolution* *(IEEE GRSL 2026)*  
 
-## Requirements
+## 🛠 Requirements
 * basicsr 1.3.4
 * Python 3.8
 * PyTorch  1.11.0.
 * CUDA  11.3
 
-## Preparation
+## 🏋️‍♂️ Preparation
 To get the training set, validation set and testing set, refer to SSPSR to download the mcodes for cropping the hyperspectral image.
 
 ## Training
